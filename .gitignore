@@ -1,0 +1,9 @@
+# large source + derived rasters (regenerate with prep.py)
+LIDAR_Data/
+data/*.f32
+data/*.npy
+data/*.png
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MapMaker Studio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="top">
+  <span class="brand">MAPMAKER STUDIO</span>
+  <button class="phase on" data-ph="1">1 · SELECT</button>
+  <button class="phase" data-ph="2" disabled>2 · COMPOSE</button>
+  <button class="phase" data-ph="3" disabled>3 · EXPORT</button>
+  <span class="sp"></span>
+  <span class="kv" id="kvArea">no area</span>
+</div>
+
+<div id="side">
+  <!-- PHASE 1 -->
+  <div class="ph" data-ph="1">
+    <h3>Location</h3>
+    <div class="row"><input id="goto" type="text" placeholder="lat, lng  ·  NZTM E N"><button id="gotoBtn">Go</button></div>
+    <h3>Basemap &amp; reference layers</h3>
+    <div class="row"><select id="basemap"></select></div>
+    <div id="layers"></div>
+    <h3>Area of interest</h3>
+    <div class="btns"><button id="drawRect">Rectangle</button><button id="drawCircle">Circle</button><button id="drawPoly">Polygon</button><button id="clearShape">Clear</button></div>
+    <div class="hint">Drag to create (polygon: click points, double-click to finish). Drag squares to move · click a midpoint dot to add a point · select a point for curve handles · <span class="kbd">Alt</span>-drag a handle to break symmetry · right-click toggles sharp/smooth · double-click deletes · drag inside to move.</div>
+    <h3>Paper</h3>
+    <div class="row"><label>Size</label><select id="paperSize" style="width:130px">
+      <option value="A4">A4</option><option value="A3" selected>A3</option><option value="A2">A2</option><option value="A1">A1</option><option value="SQ">Square 300 mm</option><option value="FIT">Fit to area</option></select></div>
+    <div class="row"><label>Orientation</label><select id="paperOri" style="width:130px"><option value="auto">Auto</option><option value="P">Portrait</option><option value="L">Landscape</option></select></div>
+    <div class="row"><label>Margin (mm)</label><input id="paperMargin" type="number" value="12" min="0" step="1"></div>
+    <div class="row"><label>Sample res (m)</label><select id="resSel" style="width:130px"><option value="auto" selected>Auto</option><option>1</option><option>2</option><option>4</option><option>8</option></select></div>
+    <div class="hint" id="resHint"></div>
+    <br><button id="toCompose" class="primary" disabled>Compose →</button>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="ph" data-ph="2" style="display:none">
+    <h3>Style presets</h3>
+    <div class="presets" id="presets"></div>
+    <h3>Canvas</h3>
+    <div class="row"><label>Paper colour</label><input id="paperColor" type="color" value="#0b0d10"></div>
+    <div class="row"><label>Outside area</label><select id="outsideMode" style="width:130px"><option value="paper">Paper</option><option value="dim">Dimmed</option><option value="show">Show</option></select></div>
+    <div class="row"><label>Dim amount</label><input id="dimAmt" type="range" min="0" max="1" step=".05" value=".75"></div>
+    <h3>Layer stack <span class="hint" style="display:inline;text-transform:none;letter-spacing:0">(top draws last)</span></h3>
+    <div id="stack"></div>
+    <div class="addrow"><select id="addSel"></select><button id="addBtn">+ Add</button></div>
+    <br><button id="toExport" class="primary">Export →</button>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="ph" data-ph="3" style="display:none">
+    <h3>Raster export</h3>
+    <div class="row"><label>DPI</label><select id="dpi" style="width:130px"><option>150</option><option selected>300</option><option>600</option></select></div>
+    <div class="hint" id="dpiHint"></div>
+    <div class="btns"><button id="expPng" class="primary">Download PNG</button></div>
+    <h3>Vector export</h3>
+    <div class="hint">SVG keeps contours, ridgelines, hachures, streams, grid and frame as editable paths. Raster layers (shading, tints, texture) are embedded as images.</div>
+    <div class="btns"><button id="expSvg" class="primary">Download SVG</button></div>
+    <h3>Data</h3>
+    <div class="btns"><button id="expGeo">Contours GeoJSON</button><button id="expJson">Save project JSON</button><button id="impJson">Load project</button></div>
+    <input id="impFile" type="file" accept=".json" style="display:none">
+    <h3>Future modules</h3>
+    <div class="hint">Tree canopy and building height estimation from imagery are planned, not built. See <code>docs/future-canopy-buildings.md</code>.</div>
+  </div>
+</div>
+
+<div id="view">
+  <div id="map"></div>
+  <div id="paperWrap"><canvas id="paper"></canvas></div>
+</div>
+<div id="status"><span id="sLL">lat —</span><span id="sEN">NZTM —</span><span id="sZ">elev —</span><span style="flex:1"></span><span id="sBusy" class="busy"></span><span id="sInfo"></span></div>
+
+<script src="js/geo.js"></script>
+<script src="js/boundary.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/modules.js"></script>
+<script src="js/presets.js"></script>
+<script src="js/studio.js"></script>
+</body>
+</html>
